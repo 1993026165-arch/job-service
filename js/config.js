@@ -12,9 +12,13 @@ window.PRICE_CONFIG = {
     },
     nav: [
       {
-        id: 'free',
-        label: '免费服务',
+        id: 'resources',
+        label: '免费资源',
         active: true
+      },
+      {
+        id: 'free',
+        label: '免费服务'
       },
       {
         id: 'single',
@@ -33,6 +37,21 @@ window.PRICE_CONFIG = {
         label: '同行对比'
       }
     ],
+    freeResources: {
+      badge: '福利',
+      title: '免费资源',
+      subtitle: '点击即领 · 无需付费',
+      items: [
+        {
+          name: '大厂内推',
+          desc: '字节、腾讯、阿里、美团、京东等大厂内推机会',
+          url: 'https://example.com/dachang-neitui',
+          btnText: '立即获取 →',
+          newWindow: true,
+          show: true
+        }
+      ]
+    },
     free: {
       badge: '免费',
       title: '免费服务',
