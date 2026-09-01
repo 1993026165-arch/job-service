@@ -343,7 +343,7 @@ window.PRICE_CONFIG = {
           ]
         }
       ],
-      oursTitle: '🔥 米推兔 · 兔哥求职陪跑',
+      oursTitle: '🔥 宁宁 · 求职陪跑',
       ours: [
         {
           name: '🐰 全流程求职陪跑',
@@ -360,19 +360,19 @@ window.PRICE_CONFIG = {
       ],
       stats: [
         {
-          num: '5,000+',
+          num: '3,000+',
           label: '上岸案例'
         },
         {
-          num: '6人',
+          num: '5人',
           label: '交付团队'
         }
       ],
       conclusion: {
-        market: '市场均价 ¥8,000 - ¥50,000',
+        market: '市场均价 ¥10,000 - ¥50,000',
         sep: '|',
-        ours: '米推兔 ¥1,199',
-        sub: '同样的全流程服务 · 别人花一万到五万 · 我只收十分之一'
+        ours: '宁宁求职 ¥5999',
+        sub: '同样的全流程服务 · 别人花一万到五万 · 我只收一半'
       },
       source: '数据来源：各机构官网、公开报价及市场调研 · 实际价格以官方为准'
     },
@@ -384,20 +384,20 @@ window.PRICE_CONFIG = {
     contact: {
       items: [
         {
-          label: '对接负责人',
-          value: '安源'
+          label: '商务合作',
+          value: '请备注来意'
         },
         {
           label: '微信号',
-          value: 'tuge_vip',
+          value: 'TJ6G5J8',
           copy: true
         },
         {
           label: '手机号',
-          value: '17723005416',
+          value: '13203357260',
           copy: true
         }
       ]
     },
-    footer: '米推兔 · 兔哥求职陪跑 · 扫码或添加微信咨询'
+    footer: '宁宁老师求职陪跑 · 扫码或添加微信咨询'
   };
