@@ -180,6 +180,44 @@
       JSON.stringify(CARD_FIELDS), '{"features":"str"}', rows);
   }
 
+  /* ---------- 免费资源（外链卡片）渲染 ---------- */
+
+  function resRow(it) {
+    return '<div class="arr-item">' +
+      '<input type="text" data-field="name" placeholder="资源名称" value="' + esc(it.name || '') + '">' +
+      '<input type="text" data-field="desc" placeholder="描述" value="' + esc(it.desc || '') + '">' +
+      '<input type="text" data-field="url" placeholder="跳转链接 https://" value="' + esc(it.url || '') + '">' +
+      '<input type="text" data-field="btnText" placeholder="按钮文字" value="' + esc(it.btnText || '') + '">' +
+      '<label class="chk"><input type="checkbox" data-field="newWindow"' + checked(it.newWindow) + '>新窗口</label>' +
+      '<label class="chk"><input type="checkbox" data-field="show"' + checked(it.show !== false) + '>显示</label>' +
+      '<button type="button" class="sort" data-sort="up" title="上移">↑</button>' +
+      '<button type="button" class="sort" data-sort="down" title="下移">↓</button>' +
+      '<button type="button" class="del">删除</button></div>';
+  }
+
+  function renderResItems(list) {
+    return arrBox('arr-freeResources.items', 'freeResources.items', 'obj', '', '',
+      (list || []).map(resRow).join(''));
+  }
+
+  /** 收集免费资源（checkbox 必须输出显式 true/false：show=false 表示隐藏） */
+  function collectResItems() {
+    var box = document.querySelector('[data-array="freeResources.items"]');
+    if (!box) return [];
+    var out = [];
+    children(box).forEach(function (row) {
+      if (!row.classList.contains('arr-item')) return;
+      var obj = {};
+      row.querySelectorAll('[data-field]').forEach(function (el) {
+        var key = el.getAttribute('data-field');
+        if (el.type === 'checkbox') obj[key] = !!el.checked;
+        else if (el.value.trim() !== '') obj[key] = el.value.trim();
+      });
+      out.push(obj);
+    });
+    return out;
+  }
+
   function renderGroups(groups) {
     return groups.map(function (g, i) {
       var rows = (g.items || []).map(function (it) {
@@ -220,22 +258,32 @@
       '<p style="font-size:12px;color:#8b949e;margin-top:6px;">导航名称可随意修改；锚点 ID 自动保留，新增项请勿手动填写 ID。</p>' +
       '</div>';
 
-    /* ③ 免费服务 */
-    html += '<div class="card"><h2>③ 免费服务 <span class="count">' + (C.free.items || []).length + ' 项</span></h2><div class="f-grid">' +
+    /* ③ 免费资源（外链卡片） */
+    html += '<div class="card"><h2>③ 免费资源（外链卡片） <span class="count">' + ((C.freeResources && C.freeResources.items) || []).length + ' 项</span></h2><div class="f-grid">' +
+      scalarRow('模块标签（badge）', 'freeResources.badge', C.freeResources && C.freeResources.badge) +
+      scalarRow('模块标题', 'freeResources.title', C.freeResources && C.freeResources.title) +
+      scalarRow('副标题', 'freeResources.subtitle', C.freeResources && C.freeResources.subtitle) +
+      '</div>' +
+      '<p style="font-size:12px;color:#8b949e;margin:0 0 8px;">每张卡片可跳转到外部链接（配置在跳转链接中），支持新窗口打开与显示开关，可用 ↑↓ 排序。</p>' +
+      renderResItems(C.freeResources && C.freeResources.items) +
+      '</div>';
+
+    /* ④ 免费服务 */
+    html += '<div class="card"><h2>④ 免费服务 <span class="count">' + (C.free.items || []).length + ' 项</span></h2><div class="f-grid">' +
       scalarRow('模块标签（badge）', 'free.badge', C.free.badge) +
       scalarRow('模块标题', 'free.title', C.free.title) +
       scalarRow('每项右侧绿色小标签', 'free.itemTag', C.free.itemTag) +
       '</div>' + renderObjArr('free.items', C.free.items || [], FREE_FIELDS) + '</div>';
 
-    /* ④ 单项服务 */
-    html += '<div class="card"><h2>④ 单项服务 <span class="count">' + (C.single.items || []).length + ' 项</span></h2><div class="f-grid">' +
+    /* ⑤ 单项服务 */
+    html += '<div class="card"><h2>⑤ 单项服务 <span class="count">' + (C.single.items || []).length + ' 项</span></h2><div class="f-grid">' +
       scalarRow('模块标签（badge）', 'single.badge', C.single.badge) +
       scalarRow('模块标题', 'single.title', C.single.title) +
       '</div><p style="font-size:12px;color:#8b949e;margin:0 0 8px;">填写“价格”即显示价格；不填价格则填“VIP标签”（如 VIP专属）。</p>' +
       renderObjArr('single.items', C.single.items || [], SINGLE_FIELDS) + '</div>';
 
-    /* ⑤ VIP 全包 */
-    html += '<div class="card"><h2>⑤ VIP 全包套餐</h2><div class="f-grid">' +
+    /* ⑥ VIP 全包 */
+    html += '<div class="card"><h2>⑥ VIP 全包套餐</h2><div class="f-grid">' +
       scalarRow('模块标签（badge）', 'vip.badge', C.vip.badge) +
       scalarRow('模块标题', 'vip.title', C.vip.title) +
       scalarRow('套餐名称', 'vip.name', C.vip.name) +
@@ -250,8 +298,8 @@
       renderStrArr('vip.features', C.vip.features || []) +
       '</div>';
 
-    /* ⑥ 尊享私教 */
-    html += '<div class="card"><h2>⑥ 尊享私教</h2><div class="f-grid">' +
+    /* ⑦ 尊享私教 */
+    html += '<div class="card"><h2>⑦ 尊享私教</h2><div class="f-grid">' +
       scalarRow('模块标签（badge）', 'premium.badge', C.premium.badge) +
       scalarRow('模块标题', 'premium.title', C.premium.title) +
       scalarRow('头像圆内文字', 'premium.avatar', C.premium.avatar) +
@@ -265,8 +313,8 @@
       renderCards(C.premium.cards || []) +
       '</div>';
 
-    /* ⑦ 同行对比 */
-    html += '<div class="card"><h2>⑦ 同行对比</h2><div class="f-grid">' +
+    /* ⑧ 同行对比 */
+    html += '<div class="card"><h2>⑧ 同行对比</h2><div class="f-grid">' +
       scalarRow('模块标签（badge）', 'compare.badge', C.compare.badge) +
       scalarRow('模块标题', 'compare.title', C.compare.title) +
       scalarRow('自己品牌标题（🔥 开头）', 'compare.oursTitle', C.compare.oursTitle) +
@@ -285,8 +333,8 @@
       scalarRow('副说明', 'compare.conclusion.sub', C.compare.conclusion.sub) +
       '</div></div>';
 
-    /* ⑧ 其他 */
-    html += '<div class="card"><h2>⑧ 底部文案 / 案例 / 联系栏</h2>' +
+    /* ⑨ 其他 */
+    html += '<div class="card"><h2>⑨ 底部文案 / 案例 / 联系栏</h2>' +
       scalarRow('底部说明（bottom-note）', 'bottomNote', C.bottomNote) +
       '<div class="f-grid">' +
       scalarRow('案例按钮文字', 'caseLink.text', C.caseLink.text) +
@@ -375,6 +423,12 @@
       tagline: scalar('brand.tagline')
     };
     o.nav = collectArr('nav');
+    o.freeResources = {
+      badge: scalar('freeResources.badge'),
+      title: scalar('freeResources.title'),
+      subtitle: scalar('freeResources.subtitle'),
+      items: collectResItems()
+    };
     o.free = {
       badge: scalar('free.badge'),
       title: scalar('free.title'),
@@ -446,6 +500,12 @@
     if (!o.free.title) errs.push('免费服务标题不能为空');
     (o.free.items || []).forEach(function (it, i) {
       if (!it.name) errs.push('免费服务第 ' + (i + 1) + ' 项名称不能为空');
+    });
+    (o.freeResources.items || []).forEach(function (it, i) {
+      if (it.show === false) return; // 隐藏项不校验链接
+      if (!it.name) errs.push('免费资源第 ' + (i + 1) + ' 项名称不能为空');
+      if (!it.url) errs.push('免费资源第 ' + (i + 1) + ' 项跳转链接不能为空');
+      if (it.url && !/^https?:\/\/\S+$/i.test(it.url)) errs.push('免费资源第 ' + (i + 1) + ' 项链接格式不正确（需以 http:// 或 https:// 开头）');
     });
     if (!o.single.title) errs.push('单项服务标题不能为空');
     (o.single.items || []).forEach(function (it, i) {
@@ -691,20 +751,42 @@
       if (row && row.parentNode) row.parentNode.removeChild(row);
       return;
     }
+    if (t.classList.contains('sort')) {
+      var srow = t.closest('.arr-item');
+      var sbox = srow.parentNode;
+      var dir = t.getAttribute('data-sort');
+      if (dir === 'up' && srow.previousElementSibling && srow.previousElementSibling.classList.contains('arr-item')) {
+        sbox.insertBefore(srow, srow.previousElementSibling);
+      } else if (dir === 'down' && srow.nextElementSibling && srow.nextElementSibling.classList.contains('arr-item')) {
+        sbox.insertBefore(srow.nextElementSibling, srow);
+      }
+      return;
+    }
     if (t.hasAttribute('data-nest-add')) {
       var nest = t.closest('.nest');
-      if (nest) nest.insertAdjacentHTML('beforeend', nestRow('', ''));
+      if (nest) {
+        var na = nest.querySelector('.add.sub');
+        if (na) na.insertAdjacentHTML('beforebegin', nestRow('', ''));
+        else nest.insertAdjacentHTML('beforeend', nestRow('', ''));
+      }
       return;
     }
     if (t.classList.contains('add')) {
       var box = t.closest('.arr-box');
       if (!box) return;
-      if (box.getAttribute('data-item-type') === 'str') {
-        box.insertAdjacentHTML('beforeend', strRow(''));
+      var addBtn = box.querySelector('.add');
+      var rowHtml;
+      if (box.getAttribute('data-array') === 'freeResources.items') {
+        rowHtml = resRow({});
+      } else if (box.getAttribute('data-item-type') === 'str') {
+        rowHtml = strRow('');
       } else {
         var fields = JSON.parse(box.getAttribute('data-fields') || '[]');
-        box.insertAdjacentHTML('beforeend', objRow({}, fields, null));
+        rowHtml = objRow({}, fields, null);
       }
+      // 新行始终插到“添加”按钮之前，保证 .arr-item 顺序连续（排序依赖相邻兄弟）
+      if (addBtn) addBtn.insertAdjacentHTML('beforebegin', rowHtml);
+      else box.insertAdjacentHTML('beforeend', rowHtml);
     }
   });
 

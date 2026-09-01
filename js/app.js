@@ -38,6 +38,30 @@
     return '<div class="section-title"><span class="badge ' + badgeCls + '">' + badgeText + '</span> ' + title + '</div>';
   }
 
+  /** 免费资源区：可点击跳转的外链卡片（链接由 config.js 管理） */
+  function renderResources() {
+    var R = C.freeResources;
+    if (!R || !R.items || !R.items.length) return '';
+    var cards = R.items.map(function (it) {
+      if (it.show === false) return '';
+      var target = it.newWindow ? ' target="_blank" rel="noopener noreferrer"' : '';
+      var btn = it.btnText ? ' <span class="res-btn">' + it.btnText + '</span>' : '';
+      return '<a class="res-card" href="' + it.url + '"' + target + '>' +
+        '<div class="res-body">' +
+        '<div class="res-name">' + it.name + '</div>' +
+        '<div class="res-desc">' + (it.desc || '') + '</div>' +
+        '</div>' +
+        btn +
+        '</a>';
+    }).filter(function (x) { return x !== ''; });
+    if (!cards.length) return '';
+    return '<div class="section" id="resources">\n' +
+      '  ' + renderSectionTitle('badge-free', R.badge || '免费', R.title || '免费资源') + '\n' +
+      (R.subtitle ? '  <div class="res-subtitle">' + R.subtitle + '</div>\n' : '') +
+      '  <div class="res-grid">\n    ' + cards.join('\n    ') + '\n  </div>\n' +
+      '</div>';
+  }
+
   function renderFree() {
     var items = C.free.items.map(function (it) {
       return '<div class="free-item"><span class="dot"></span><span class="name">' + it.name + '</span><span class="tag">' + C.free.itemTag + '</span></div>';
@@ -199,6 +223,7 @@
     var html = [
       renderNav(),
       renderHeader(),
+      renderResources(),
       renderFree(),
       renderSingle(),
       renderVip(),
