@@ -558,24 +558,21 @@
 
   /* ---------------- 生成流程 ---------------- */
 
+  // 安全的静态验证：config.js 文本完全由 serialize() 受控生成（q() 负责转义），
+  // 结构正确性由 validate()（对象级校验）保证，语法级验证由独立的 Node.js 测试脚本完成。
+  // 浏览器端不执行任何动态代码（无 eval / new Function），兼容严格 CSP。
   function generate() {
     var obj = collect();
     var errs = validate(obj);
     if (errs.length) { showErrors(errs); return; }
     var code = serialize(obj);
-    try {
-      new Function('window', code + '; return window.PRICE_CONFIG;')({});
-    } catch (e) {
-      showErrors(['生成的配置存在语法错误：' + e.message]);
-      return;
-    }
     download('config.js', code, 'text/javascript;charset=utf-8');
     showOk('✅ 已生成 config.js（浏览器已开始下载）。请用下载的文件替换项目中的 js/config.js。');
   }
 
   /**
    * 发布到网站：
-   * 1. 收集表单 → 校验 → 序列化 → 语法检查
+   * 1. 收集表单 → 校验（静态，不执行代码）→ 序列化
    * 2. 下载 config.js（浏览器侧唯一能做的事）
    * 3. 提示用户：替换 js/config.js 后，在 WorkBuddy 中发送「发布到网站」，
    *    由本地 GitHub CLI 完成 git commit + push，GitHub Pages 自动更新线上页面。
@@ -586,12 +583,6 @@
     var errs = validate(obj);
     if (errs.length) { showErrors(errs); return; }
     var code = serialize(obj);
-    try {
-      new Function('window', code + '; return window.PRICE_CONFIG;')({});
-    } catch (e) {
-      showErrors(['生成的配置存在语法错误：' + e.message]);
-      return;
-    }
     download('config.js', code, 'text/javascript;charset=utf-8');
     var box = document.getElementById('okmsg');
     document.getElementById('errors').hidden = true;
