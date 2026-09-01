@@ -65,37 +65,17 @@ window.PRICE_CONFIG = {
         {
           num: 1,
           name: '简历量身定做',
-          price: '499'
-        },
-        {
-          num: 2,
-          name: '全程答疑 + 投递指导 + 笔面试指导',
-          price: '488'
-        },
-        {
-          num: 3,
-          name: '求职认知课',
-          price: '199'
+          price: '299'
         },
         {
           num: 4,
-          name: '职业规划',
-          price: '399'
+          name: '职业规划/1h',
+          price: '299'
         },
         {
           num: 5,
-          name: '对简历深挖出题',
-          price: '199'
-        },
-        {
-          num: 6,
-          name: '全程不限次数答疑电话',
-          vb: 'VIP专属'
-        },
-        {
-          num: 7,
-          name: '情绪价值（男/女小助理可选）',
-          vb: 'VIP专属'
+          name: '面试模拟/1-1.5h',
+          price: '359'
         }
       ]
     },
@@ -104,7 +84,7 @@ window.PRICE_CONFIG = {
       title: 'VIP全包',
       name: 'VIP全包',
       sub: '服务到上岸',
-      price: '1199',
+      price: '5999',
       priceUnit: '一次性',
       note: '社招根据工作年限价格上浮',
       slogan: '多人联合辅导 · 覆盖多行业多岗位',
