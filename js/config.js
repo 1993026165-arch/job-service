@@ -104,7 +104,7 @@ window.PRICE_CONFIG = {
       title: 'VIP全包',
       name: 'VIP全包',
       sub: '服务到上岸',
-      price: '1299',
+      price: '1199',
       priceUnit: '一次性',
       note: '社招根据工作年限价格上浮',
       slogan: '多人联合辅导 · 覆盖多行业多岗位',
