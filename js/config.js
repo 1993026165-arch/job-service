@@ -302,16 +302,8 @@ window.PRICE_CONFIG = {
               price: '¥8,800'
             },
             {
-              name: '互联派 · 火箭项目',
-              price: '¥6,980'
-            },
-            {
               name: 'UniCareer · 1V1定制5h',
               price: '¥6,400'
-            },
-            {
-              name: '17 Career · 校招计划',
-              price: '¥3,000+'
             },
             {
               name: 'UniCareer · 简历飞跃',
@@ -327,7 +319,7 @@ window.PRICE_CONFIG = {
             },
             {
               name: '个人导师 · 简历修改',
-              price: '¥599-999/份'
+              price: '¥500-999/份'
             }
           ]
         }
