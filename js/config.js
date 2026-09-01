@@ -49,6 +49,13 @@ window.PRICE_CONFIG = {
           btnText: '立即获取 →',
           newWindow: true,
           show: true
+        },
+        {
+          name: '校招岗位日更表',
+          url: 'https://www.nowcoder.com/',
+          btnText: '立即获取 →',
+          newWindow: true,
+          show: true
         }
       ]
     },
