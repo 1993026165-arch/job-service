@@ -75,14 +75,34 @@ index.html ──引入──> js/config.js（内容数据）──读取──>
 **线上地址**：https://1993026165-arch.github.io/job-service/
 **代码仓库**：https://github.com/1993026165-arch/job-service （Pages 已配置：main 分支根目录，push 即自动更新，约 1 分钟生效）
 
-### 发布流程（每次改完内容）
+### 一键发布（推荐）
 
-1. 打开 `admin.html`，修改内容
-2. 点【🚀 发布到网站】→ 浏览器下载 `config.js`
-3. 用下载的文件**替换**项目中的 `js/config.js`
-4. 在 WorkBuddy 中发送 **「发布到网站」** → 助手自动执行 git 提交 + 推送 → 约 1 分钟后线上更新
+```
+WorkBuddy 启动本地发布服务（tools/publish-server.js，仅监听 127.0.0.1:8899）
+→ 打开 admin.html → 修改内容 → 点【🚀 发布到网站】
+→ 本地服务自动：备份 config.js → 写入新配置 → git add/commit/push → 查 Pages 状态
+→ 约 1 分钟后线上更新
+```
 
-> 凭据由 GitHub CLI（gh）在系统安全区托管，全程无 Token 暴露、无 Token 写入任何文件。
+- 无需手动替换文件、无需手动敲 Git 命令
+- 顶部状态条显示「发布服务：已连接 / 未连接」；未连接时自动降级为下载 config.js 备用
+- 服务端二次校验（语法 + 必填字段），失败自动回滚备份，不影响线上
+- 凭据由 GitHub CLI（gh）在系统安全区托管，全程无 Token 暴露
+
+### 手动发布（备用）
+
+1. `admin.html` 点【⬇ 保存 config.js】下载
+2. 用下载文件替换 `js/config.js`
+3. WorkBuddy 中发送「发布到网站」由助手推送
+
+### 本地发布服务启动方式（由 WorkBuddy 执行）
+
+```
+node tools/publish-server.js
+环境变量：PORT(默认8899) / WORK_DIR(默认项目目录) / DRY_RUN=1(测试模式不推送) / GH_PATH
+```
+
+> 服务仅监听 127.0.0.1；只允许写固定的 js/config.js，无任意命令执行接口。
 
 ## 注意事项
 

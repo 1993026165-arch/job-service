@@ -45,6 +45,9 @@
   .errors li { margin-left: 18px; line-height: 1.8; }
   .okmsg { max-width: 960px; margin: 14px auto 0; padding: 12px 16px; background: #dafbe1; border: 1px solid #aceebb; border-radius: 8px; font-size: 13px; color: #1a7f37; line-height: 1.9; }
   .okmsg code { background: #f0f5f1; padding: 1px 6px; border-radius: 4px; font-size: 12px; }
+  .svc-status { max-width: 960px; margin: 12px auto 0; padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 600; text-align: center; }
+  .svc-status.on { background: #e6f4ea; color: #1a7f37; border: 1px solid #b8e0c2; }
+  .svc-status.off { background: #f6f8fa; color: #8b949e; border: 1px solid #e1e4e8; }
   @media (max-width: 640px) { .f-grid { grid-template-columns: 1fr; } .arr-item input { min-width: 100%; } }
 </style>
 </head>
@@ -60,15 +63,16 @@
       <button type="button" id="btnPublish" class="publish">🚀 发布到网站</button>
     </div>
   </div>
-  <div class="hint">修改完成后：① 点【🚀 发布到网站】→ ② 用下载的 config.js 替换项目 <code>js/</code> 目录 → ③ 在 WorkBuddy 中发送「发布到网站」，助手会自动推送到 GitHub 并更新线上页面。</div>
+  <div class="hint">一键发布：修改内容 → 点【🚀 发布到网站】→ 本地服务自动备份、更新 config.js、git 提交并推送 → GitHub Pages 自动部署。无需手动替换文件。</div>
 </header>
 
+<div id="svcStatus" class="svc-status off">发布服务：检测中…</div>
 <div id="errors" class="errors" hidden></div>
 <div id="okmsg" class="okmsg" hidden></div>
 
 <main id="form"></main>
 
-<footer class="hint bottom">修改完成后：① 点【🚀 发布到网站】→ ② 用下载的 config.js 替换项目 <code>js/</code> 目录 → ③ 在 WorkBuddy 中发送「发布到网站」，助手会自动推送到 GitHub 并更新线上页面。</footer>
+<footer class="hint bottom">修改内容 → 点【🚀 发布到网站】→ 自动发布。若发布服务未连接，会自动降级为下载 config.js 备用。</footer>
 
 <script src="js/config.js"></script>
 <script src="js/admin.js"></script>

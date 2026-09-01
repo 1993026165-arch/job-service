@@ -558,6 +558,10 @@
 
   /* ---------------- 生成流程 ---------------- */
 
+  // 本地发布服务地址（由 WorkBuddy 启动，仅监听本机）
+  var PUBLISH_SERVICE = 'http://127.0.0.1:8899';
+  var ONLINE_URL = 'https://1993026165-arch.github.io/job-service/';
+
   // 安全的静态验证：config.js 文本完全由 serialize() 受控生成（q() 负责转义），
   // 结构正确性由 validate()（对象级校验）保证，语法级验证由独立的 Node.js 测试脚本完成。
   // 浏览器端不执行任何动态代码（无 eval / new Function），兼容严格 CSP。
@@ -571,28 +575,95 @@
   }
 
   /**
-   * 发布到网站：
+   * 一键发布到网站：
    * 1. 收集表单 → 校验（静态，不执行代码）→ 序列化
-   * 2. 下载 config.js（浏览器侧唯一能做的事）
-   * 3. 提示用户：替换 js/config.js 后，在 WorkBuddy 中发送「发布到网站」，
-   *    由本地 GitHub CLI 完成 git commit + push，GitHub Pages 自动更新线上页面。
-   *    全程不涉及任何 Token（凭据由 gh keyring 托管）。
+   * 2. POST 到本地发布服务（127.0.0.1:8899，由 WorkBuddy 启动）
+   *    服务端完成：备份 config.js → 写入 → git add/commit/push → 查 Pages 状态
+   * 3. 服务未连接时降级：下载 config.js 备用
+   * 全程不涉及任何 Token（凭据由 gh keyring 托管，服务端也接触不到 Token）。
    */
   function publish() {
     var obj = collect();
     var errs = validate(obj);
     if (errs.length) { showErrors(errs); return; }
     var code = serialize(obj);
+
+    if (typeof fetch !== 'function') { fallbackPublish(code); return; }
+
+    var ctrl = (typeof AbortController !== 'undefined') ? new AbortController() : null;
+    var timer = ctrl ? setTimeout(function () { ctrl.abort(); }, 8000) : null;
+
+    fetch(PUBLISH_SERVICE + '/publish', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ config: code }),
+      signal: ctrl ? ctrl.signal : undefined
+    }).then(function (r) {
+      return r.json();
+    }).then(function (res) {
+      if (timer) clearTimeout(timer);
+      if (res && res.ok) showPublishOk(res);
+      else fallbackPublish(code, res && res.error);
+    }).catch(function () {
+      if (timer) clearTimeout(timer);
+      fallbackPublish(code);
+    });
+  }
+
+  /** 发布成功提示 */
+  function showPublishOk(res) {
+    var box = document.getElementById('okmsg');
+    document.getElementById('errors').hidden = true;
+    box.hidden = false;
+    box.innerHTML =
+      '🚀 发布成功！' +
+      '<br>提交：<code>' + esc(res.commit || '-') + '</code>' +
+      '<br>' + (res.pushed
+        ? '已推送到 GitHub，Pages 正在部署，约 1 分钟后生效（当前状态：' + esc(res.pagesStatus || 'building') + '）'
+        : '（测试模式：已提交，未推送）') +
+      '<br>线上地址：<a href="' + ONLINE_URL + '" target="_blank" rel="noopener">' + ONLINE_URL + '</a>';
+  }
+
+  /** 发布服务未连接时的降级方案（保留备用下载） */
+  function fallbackPublish(code, err) {
     download('config.js', code, 'text/javascript;charset=utf-8');
     var box = document.getElementById('okmsg');
     document.getElementById('errors').hidden = true;
     box.hidden = false;
     box.innerHTML =
-      '✅ 配置已生成，浏览器已开始下载 config.js。<br><br>' +
-      '下一步（3 步）：<br>' +
-      '① 用下载的 config.js 替换项目中的 <code>js/config.js</code><br>' +
-      '② 回到 WorkBuddy 对话，发送：<b>「发布到网站」</b><br>' +
-      '③ 助手自动执行 git 提交并推送到 GitHub，Pages 自动更新线上页面。';
+      '⚠️ 本地发布服务未连接' + (err ? '（' + esc(err) + '）' : '') + '。<br>' +
+      '已下载 <code>config.js</code> 备用。<br>' +
+      '请让 WorkBuddy 启动发布服务后重试，或在 WorkBuddy 中发送「发布到网站」。';
+  }
+
+  /** 页面加载时检测本地发布服务状态 */
+  function checkService() {
+    var el = document.getElementById('svcStatus');
+    if (!el) return;
+    if (typeof fetch !== 'function') {
+      el.textContent = '发布服务：不可用（当前环境不支持）';
+      el.className = 'svc-status off';
+      return;
+    }
+    var ctrl = (typeof AbortController !== 'undefined') ? new AbortController() : null;
+    var timer = ctrl ? setTimeout(function () { ctrl.abort(); }, 3000) : null;
+    fetch(PUBLISH_SERVICE + '/status', { signal: ctrl ? ctrl.signal : undefined })
+      .then(function (r) { return r.json(); })
+      .then(function (res) {
+        if (timer) clearTimeout(timer);
+        if (res && res.ok) {
+          el.textContent = '发布服务：已连接（' + res.branch + ' · ' + (res.dryRun ? '测试模式' : '正式模式') + '）';
+          el.className = 'svc-status on';
+        } else {
+          el.textContent = '发布服务：未连接';
+          el.className = 'svc-status off';
+        }
+      })
+      .catch(function () {
+        if (timer) clearTimeout(timer);
+        el.textContent = '发布服务：未连接';
+        el.className = 'svc-status off';
+      });
   }
 
   function restore() {
@@ -640,6 +711,7 @@
   /* ---------------- 启动 ---------------- */
 
   buildForm();
+  checkService();
 
   // 暴露给外部测试使用
   window.AdminApp = {
@@ -650,6 +722,7 @@
     publish: publish,
     restore: restore,
     preview: preview,
+    checkService: checkService,
     buildForm: buildForm,
     getInitial: function () { return deepClone(INITIAL); }
   };
