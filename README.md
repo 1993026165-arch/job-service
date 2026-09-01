@@ -70,14 +70,19 @@ index.html ──引入──> js/config.js（内容数据）──读取──>
 - CSS：原样提取，一字未改
 - 结论：视觉 100% 不变
 
-## 部署到 GitHub Pages
+## 部署到 GitHub Pages（已上线）
 
-1. 新建自己的 GitHub 仓库（如 `your-name/price-page`）
-2. 上传本目录全部文件
-3. 仓库 `Settings → Pages → Source: Deploy from a branch → main / (root)`
-4. 访问 `https://your-name.github.io/price-page/`
+**线上地址**：https://1993026165-arch.github.io/job-service/
+**代码仓库**：https://github.com/1993026165-arch/job-service （Pages 已配置：main 分支根目录，push 即自动更新，约 1 分钟生效）
 
-不需要构建，纯静态即可。
+### 发布流程（每次改完内容）
+
+1. 打开 `admin.html`，修改内容
+2. 点【🚀 发布到网站】→ 浏览器下载 `config.js`
+3. 用下载的文件**替换**项目中的 `js/config.js`
+4. 在 WorkBuddy 中发送 **「发布到网站」** → 助手自动执行 git 提交 + 推送 → 约 1 分钟后线上更新
+
+> 凭据由 GitHub CLI（gh）在系统安全区托管，全程无 Token 暴露、无 Token 写入任何文件。
 
 ## 注意事项
 
