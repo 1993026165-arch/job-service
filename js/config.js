@@ -7,7 +7,7 @@ window.PRICE_CONFIG = {
     brand: {
       title: '宁宁',
       sub: '求职陪跑',
-      slogan: '亲自交付 · 朋友圈每天真实案例 · 性价比拉满',
+      slogan: '宁宁和大厂在职老师亲自交付',
       tagline: '外面机构全程陪跑都是5位数，欢迎比价'
     },
     nav: [
